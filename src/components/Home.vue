@@ -2,11 +2,11 @@
   <section class="src-components-home">
     <div id="header">
       <h1>The Great <br>
-        <span id="colorDisplay">RGB</span>
+        <span id="colorDisplay">{{color || 'RGB' }} </span>
         <br>
         Guessing Game</h1>
     </div> 
-    <Navigator />
+    <Navigator @actualColor="color=$event" />
   </section>
 
 </template>
@@ -25,7 +25,7 @@
     },
     data () {
       return {
-
+        color:''
       }
     },
     methods: {
@@ -54,5 +54,7 @@
   #colorDisplay {
     font-size: 200%;
   }
+
+
 
 </style>

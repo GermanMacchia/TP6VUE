@@ -2,11 +2,11 @@
   <section class="src-components-home">
     <div id="header">
       <h1>The Great <br>
-        <span id="colorDisplay">{{color || 'RGB' }} </span>
+        <span id="colorDisplay">{{ $store.state.pickedColor || 'RGB' }} </span>
         <br>
         Guessing Game</h1>
     </div> 
-    <Navigator @actualColor="color=$event" />
+    <Navigator />
   </section>
 
 </template>
@@ -25,7 +25,7 @@
     },
     data () {
       return {
-        color:''
+
       }
     },
     methods: {

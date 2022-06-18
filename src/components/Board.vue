@@ -1,7 +1,7 @@
 <template>
   <section class="src-components-board">
-    <div id="container">
-      <div class="square" v-for="cuadrado in cuadrados" :style="cuadrado.style" :key="cuadrado.id" @click="consultar(cuadrado.style)"></div>
+    <div v-if="$store.state.squares" id="container">
+      <div class="square" v-for="cuadrado in $store.state.squares" :style="cuadrado.style" :key="cuadrado.id" @click="consultar(cuadrado.style)"></div>
     </div>
   </section>
 </template>
@@ -10,12 +10,11 @@
 
   export default  {
     name: 'src-components-board',
-    props: ['cuadrados', 'color'],
+    props: [],
     mounted () {
     },
     data () {
       return {
-        menssage: ''
       }
     },
     methods: {
@@ -23,23 +22,18 @@
 
         let { backgroundColor } = squareStyle
 
-        if ( backgroundColor === this.color) {
-              this.menssage = "You Picked Right!"
-              this.sendMessage()
-              this.setAllColorsTo(this.color);
-              this.$emit('button', "Play Again!")
-              document.querySelector('#header').style.backgroundColor = this.color
+        if ( backgroundColor === this.$store.state.pickedColor) {
+              this.$store.dispatch('asignarMensaje', 'You Picked Right!')      
+              this.$store.dispatch('asignarMsgBoton','Play Again!')
+              this.setAllColors();
+              document.querySelector('#header').style.background = this.$store.state.pickedColor 
             } else {
-              this.menssage = "Try Again!";
-              this.sendMessage()
+              this.$store.dispatch('asignarMensaje', "Try Again!")
               squareStyle.backgroundColor = "#232323"
             }
       },
-      setAllColorsTo(color) {
-        this.cuadrados.forEach((e) => e.style= { ...e.style, backgroundColor:color})
-      },
-      sendMessage(){
-        this.$emit('message', this.menssage)
+      setAllColors() {
+        this.$store.state.squares.forEach((e) => e.style= { ...e.style, backgroundColor: this.$store.state.pickedColor})
       }
     },
     computed: {

@@ -1,12 +1,12 @@
 <template>
   <section class="src-components-navigator">
       <div id="navigator">
-        <button id="reset" @click="restart()">{{restartButton}}</button>
-        <span id="message">{{message}}</span>
+        <button id="reset" @click="restart()">{{$store.state.boton}}</button>
+        <span id="message">{{$store.state.message}}</span>
         <button id="easy" @click="easyMode()" :class="{ selected: !isHard }">easy</button>
         <button id="hard" @click="hardMode()" :class="{ selected:  isHard }">hard</button>
       </div>
-      <Board :cuadrados="squares" :color="pickedColor" @button="restartButton=$event" @message="message=$event" />
+      <Board/>
   </section>
 </template>
 
@@ -21,64 +21,39 @@
       Board
     },
     mounted () {
-      this.init()
+      this.setColors()
     },
     data () {
       return {
-        colorCount: 6,
-        squares: [],
-        isHard: true,
-        colors: '',
-        pickedColor:'',
-        restartButton: 'New Colors',
-        message: ''
+        isHard: true
       }
     },
     methods: {
       easyMode(){    
         if (this.isHard) {
           this.isHard = false;
-          this.colorCount = 3
-          for (let i = 0; i < this.colorCount; i++) {
-            let auxSquare = this.squares[(i+3)]
-            auxSquare.style= {...auxSquare.style, display: 'none' };
-          }
           this.restart();
         }
       },
       hardMode(){
         if (!this.isHard) {
           this.isHard = true;
-          this.colorCount = 6;
-          for (let i = 0; i < this.colorCount; i++) {
-            let auxSquare = this.squares[i]
-            auxSquare.style= { ...auxSquare.style, display: 'block' };
-          }        
-          this.restart();  
+          this.restart();
         }
-      },
-      init(){
-        this.setColors()
-        for(let i = 0; i< this.colorCount; i++){
-          this.squares.push({id: i, style:{ backgroundColor: this.colors[i] }})
+      },      
+      restart(){
+        this.setColors()         
+        this.$store.dispatch('asignarMensaje', '')
+        this.$store.dispatch('asignarMsgBoton','New Colors')
+        document.querySelector('#header').style.backgroundColor = 'steelblue'
+        if(!this.isHard){
+          this.$store.dispatch('cambiarModoFacil')
         }
       },
       setColors(){
-        this.colors = this.createNewColors(6);
-        this.pickedColor = this.colors[this.PickColor()];
-        this.sendColorDisplay(this.pickedColor);
-      },
-      restart(){
-        this.message = ''
-        this.restartButton= 'New Colors'
-        document.querySelector('#header').style.backgroundColor = 'steelblue'
-        this.setColors()
-        for(let i = 0; i< this.colorCount; i++){
-          this.squares[i].style= { backgroundColor: this.colors[i] };
-        }
-      },
-      sendColorDisplay(colorDisplay){
-        this.$emit('actualColor', colorDisplay)
+        this.createNewColors(6);
+        this.pickedColor = this.$store.state.squares[this.PickColor()].style.backgroundColor;
+        this.$store.dispatch('asignarColor', this.pickedColor)
       },
       PickColor(){
         let quantity;
@@ -94,15 +69,19 @@
         let arr = [];
         
         for (var i = 0; i < numbers; i++) {
-          arr.push(this.createRandomStringColor());
+          arr.push({id: i, style:{ backgroundColor:this.createRandomStringColor()}});
         }
-          return arr;  
+        this.$store.dispatch('asignarCuadrados', arr)      
+
       },
       createRandomStringColor(){
+
         let newColor = "rgb(" + this.randomInt() + ", " + this.randomInt() + ", " + this.randomInt() + ")" ;
         return newColor;
+
       },
       randomInt(){
+
         return Math.floor(Math.random() * 256);
       },
     },
